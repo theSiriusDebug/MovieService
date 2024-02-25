@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,20 +29,14 @@ public class Review {
     @JsonIgnore
     private Movie movie;
 
-    @OneToMany(mappedBy = "parentReview", cascade = CascadeType.ALL)
-    private List<Reply> replies;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    @JsonIgnore
+    private Review parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<Review> replies = new ArrayList<>();
 
     @NotBlank(message = "reviewText must not be blank")
-    @Min(value = 1)
     private String reviewText;
-
-    @Transient
-    private String reviewOwner;
-
-    public String getReviewOwner() {
-        if (user != null) {
-            return user.getUsername();
-        }
-        return null;
-    }
 }

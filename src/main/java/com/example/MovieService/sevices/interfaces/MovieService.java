@@ -1,15 +1,17 @@
 package com.example.MovieService.sevices.interfaces;
 
 import com.example.MovieService.models.Movie;
+import com.example.MovieService.models.dtos.movieDtos.MovieDto;
+import com.example.MovieService.models.dtos.movieDtos.MovieFilterDTO;
 
 import java.util.List;
 
 public interface MovieService {
-    List<Movie> findAllMovies();
+    List<MovieDto> getFilteredMovies(MovieFilterDTO dto);
 
-    Movie findOptionalMovieById(long id);
+    List<MovieDto> getMovies(String sortType);
 
-    void deleteMovie(Movie movie);
+    Movie findMovieById(long id);
 
     void saveMovie(Movie movie);
 }

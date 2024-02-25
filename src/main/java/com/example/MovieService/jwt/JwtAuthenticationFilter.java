@@ -1,7 +1,7 @@
 package com.example.MovieService.jwt;
 
 import com.example.MovieService.models.User;
-import com.example.MovieService.models.dtos.AuthDto;
+import com.example.MovieService.models.dtos.userDtos.AuthDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

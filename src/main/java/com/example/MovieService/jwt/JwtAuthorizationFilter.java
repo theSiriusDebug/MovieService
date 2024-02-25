@@ -1,8 +1,7 @@
 package com.example.MovieService.jwt;
 
-import com.example.MovieService.sevices.UserServiceImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,15 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserServiceImpl userServiceImpl;
+    private final JwtTokenProvider provider;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserServiceImpl userServiceImpl) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider provider) {
         super(authenticationManager);
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userServiceImpl = userServiceImpl;
+        this.provider = provider;
+
     }
 
     @Override
@@ -34,14 +32,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String token = header.replace("Bearer ", "");
-        System.out.println("JWT Token: " + token);
 
-        if (jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        if (provider.validateToken(token)) {
+            Authentication authentication = provider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            logger.info("JWT Token validated and authentication set.");
+            log.info("JWT Token validated and authentication set.");
         } else {
-            logger.warn("JWT Token validation failed.");
+            log.warn("JWT Token validation failed.");
         }
 
         chain.doFilter(request, response);

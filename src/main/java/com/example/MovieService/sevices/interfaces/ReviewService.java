@@ -1,17 +1,18 @@
 package com.example.MovieService.sevices.interfaces;
 
-import com.example.MovieService.models.Movie;
 import com.example.MovieService.models.Review;
+import com.example.MovieService.models.dtos.reviewDtos.ReviewDto;
+
 import java.util.List;
 
 public interface ReviewService {
-    List<Review> findAllReviews();
+    List<ReviewDto> findAllReviews();
 
     Review findReviewById(long id);
 
-    void deleteReview(Review review);
+    ReviewDto findReviewDtoById(long id);
 
-    List<Review> findReviewByMovie(Movie movie);
+    void deleteReview(Review review);
 
     void saveReview(Review review);
 }

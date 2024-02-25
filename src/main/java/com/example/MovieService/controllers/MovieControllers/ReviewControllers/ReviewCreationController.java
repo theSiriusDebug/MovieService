@@ -3,6 +3,7 @@ package com.example.MovieService.controllers.MovieControllers.ReviewControllers;
 import com.example.MovieService.models.Movie;
 import com.example.MovieService.models.Review;
 import com.example.MovieService.models.User;
+import com.example.MovieService.models.dtos.reviewDtos.ReviewDto;
 import com.example.MovieService.sevices.MovieServiceImpl;
 import com.example.MovieService.sevices.ReviewServiceImpl;
 import com.example.MovieService.sevices.UserServiceImpl;
@@ -37,14 +38,14 @@ public class ReviewCreationController {
 
     @ApiOperation("Get all reviews")
     @GetMapping
-    public ResponseEntity<List<Review>> getReviews(){
+    public ResponseEntity<List<ReviewDto>> getReviews(){
         return ResponseEntity.ok(reviewServiceImpl.findAllReviews());
     }
 
     @ApiOperation("Get review by id")
     @GetMapping("/{id}")
-    public ResponseEntity<Review> getReview(@PathVariable("id") long id) {
-        return ResponseEntity.ok(reviewServiceImpl.findReviewById(id));
+    public ResponseEntity<ReviewDto> getReview(@PathVariable("id") long id) {
+        return ResponseEntity.ok(reviewServiceImpl.findReviewDtoById(id));
     }
 
     @ApiOperation("Create a review")
@@ -53,9 +54,9 @@ public class ReviewCreationController {
         log.info("Creating review for movie with ID: " + movieId);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = userServiceImpl.findByOptionalUsername(authentication.getName());
+        User currentUser = userServiceImpl.findByUsername(authentication.getName());
 
-        Movie movie = movieServiceImpl.findOptionalMovieById(movieId);
+        Movie movie = movieServiceImpl.findMovieById(movieId);
 
         Review review = new Review();
         review.setUser(currentUser);
@@ -120,5 +121,25 @@ public class ReviewCreationController {
 
         log.info("Review edited successfully with ID: " + reviewId);
         return ResponseEntity.ok("Review updated successfully");
+    }
+
+    @ApiOperation("Create a reply.")
+    @PostMapping("/create/{movieId}/{reviewId}")
+    public ResponseEntity<Review> createReply(@PathVariable Long movieId, @PathVariable Long reviewId, @RequestBody String reviewText) {
+        log.info("Creating review for movie with ID: " + movieId);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userServiceImpl.findByUsername(authentication.getName());
+
+        Review reply = new Review();
+        reply.setUser(currentUser);
+        reply.setParent(reviewServiceImpl.findReviewById(reviewId));
+        reply.setReviewText(reviewText);
+        reply.setMovie(movieServiceImpl.findMovieById(movieId));
+
+        reviewServiceImpl.saveReview(reply);
+
+        log.info("Review created successfully for movie with ID: " + movieId);
+        return ResponseEntity.ok(reply);
     }
 }
